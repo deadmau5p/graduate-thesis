@@ -130,8 +130,8 @@ if __name__ == "__main__":
     #analysis()
     #dolzina_clankov()
 
-    twitter_class_dist('train')
-    twitter_class_dist('test')
+    #twitter_class_dist('train')
+    #twitter_class_dist('test')
     """analysis()
     stevilo_clankov()
     stevilo_podvojenih()
@@ -175,10 +175,6 @@ if __name__ == "__main__":
     print(df['Naziv medija'].value_counts())
 
 
-    #df = data_utils.get_target_pkl('okolje', util.le, util.splav_lemma_text)
-    #print(df['Naziv medija'].value_counts())
-
-
     df = data_utils.get_target_pkl('feminism', util.feminizem_lemma, util.feminizem_lemma_text)
     print(df['Naziv medija'].value_counts())
 
@@ -187,5 +183,5 @@ if __name__ == "__main__":
     print(df['Naziv medija'].value_counts())
 
 
-    df = data_utils.get_target_pkl('kucan', util.kucan_lemma, util.kucan_lemma_text)
+    df = data_utils.get_target_pkl('milan_kucan', util.kucan_lemma, util.kucan_lemma_text)
     print(df['Naziv medija'].value_counts())

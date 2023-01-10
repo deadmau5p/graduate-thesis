@@ -15,20 +15,23 @@ import obeliks
 # nlp = classla.Pipeline('sl', processors='tokenize,pos,lemma')
 from loguru import logger
 
-ateizem_lemma = "vernik|ateist|ateizem|ateizma|vera v bog|Vera v bog|kristjan|krščanstvo|krščanstva|krščanski cerkvi|" \
-                "krščanska cerkev|krščansk|krščanstv"
-ateizem_lemma_text = "vernik|ateist|ateizem|ateizma|vera v bog|Vera v bog|kristjan|krščanstvo|krščanstva|krščanski cerkvi|" \
-                     "krščanska cerkev|krščansk|krščanstv"
+ateizem_lemma = "vernik|ateist|ateizem|ateizma|vera v bog|Vera v Bog|kristjan|krščanski cerkvi|" \
+                "krščanska cerkev|krščansk|krščanstv|Vernik|Atesit|Ateizem|Ateizma|Kristjan|Krščanstv|Krščansk|Bog|nevernik|vernik|Vernik|Nevernik|nebesa|Nebesa|religioznost|religij|Religij|Religioznost"
+ateizem_lemma_text = "vernik|ateist|ateizem|ateizma|vera v bog|Vera v bog|kristjan|krščanski cerkvi|" \
+                     "krščanska cerkev|krščansk|krščanstv|Vernik|Atesit|Ateizem|Ateizma|Kristjan|Krščanstv|Krščansk|Bog|nevernik|vernik|Vernik|Nevernik|nebesa|Nebesa"
 feminizem_lemma = "feminiz|feminist|Feminiz|Feminist"
 feminizem_lemma_text = "feminiz|feminist|splav|ženska|enakopravnost|spol|Feminiz|Feminist|Ženska|Enakopravnost|Spol"
-janez_jansa_lemma = "predsednik SDS|prvak SDS|Janez Janša|Janša"
-janez_jansa_lemma_text = "predsednik SDS|prvak SDS|Janez Janša|Janša"
+janez_jansa_lemma = "predsednik SDS|prvak SDS|Janez Janša|Janša|Predsednik SDS|Prvak SDS"
+janez_jansa_lemma_text = "predsednik SDS|prvak SDS|Janez Janša|Janša|Predsednik SDS|Prvak SDS|SDS|predsednik|Predsednik"
 kucan_lemma = "Kučan"
-kucan_lemma_text = "Kučan|Milan|ozadj"
-splav_lemma = "do splav|zakon o splav"
-splav_lemma_text = "do splav|zakon o splav|žensk|otrok|nerojen|kriminal"
-climate_phrases = "narava|okoljevarstv|okoljska aktivistka|okoljski aktivist"
-climate_phrases_text = "narava|okoljevarstven|okoljsk|okolje|vesolje|vodi|voda|morje|morju"
+kucan_lemma_text = "Kučan|Milan"
+splav_lemma = "do splav|zakon o splav|Zakon o splav|Legalizacija splav|legalizacija splav|splav|Splav"
+splav_lemma_text = "do splav|zakon o splav|žensk|otrok|nerojen|kriminal|Legalizacija splav|legalizacija " \
+                   "splav|umor|Umor|Ubij|ubij|Uboj|Uboj|Nedolž|nedolž|" \ 
+                   "Kriminal|" \
+                   "Nerojen|Otrok|Žensk|Zakon o splavu|splav|Splav|umor|Umor|Uboj|uboj|ubij|Ubij|zarodek"
+# climate_phrases = "narava|okoljevarstv|okoljska aktivistka|okoljski aktivist"
+# climate_phrases_text = "narava|okoljevarstven|okoljsk|okolje|vesolje|vodi|voda|morje|morju"
 
 label2id = {"AGAINST": 2, "NONE": 1, "FAVOR": 0}
 id2label = ["FAVOR", "NONE", "AGAINST"]
@@ -154,6 +157,7 @@ def get_target_pkl(target, phrases, phrases_text):
     else:
         df = get_only_big_media()
         all_df = df[df["Naslov"].str.contains(phrases, na=False)]
+        print(all_df.shape)
         all_df = all_df[all_df["Vsebina"].str.contains(phrases_text, na=False)]
         all_df['n_matches'] = all_df['Vsebina'].apply(lambda text: number_of_occurences(text, phrases_text))
         all_df = all_df.sort_values(by="n_matches", ascending=False)
@@ -218,7 +222,6 @@ def number_of_occurences(text, fraze):
     n = 0
     for x in fraze.split("|"):
         n = n + text.count(x)
-    print(n)
     return n
 
 
@@ -284,10 +287,12 @@ def calculate_results(res):
             plt.xlabel("Medij")
             plt.ylabel("Število člankov")
             plt.show()
-    df = pd.DataFrame(
-        {"Medij": res.keys(), "against": against_, "favor": favor_, "none": none_}
+    df1 = pd.DataFrame(
+        {"Medij": res.keys(), "favor": favor_, "none": none_, "against": against_, }
     )
-    return df
+
+
+    return df1
 
 
 def get_loss_array(logs):
@@ -305,7 +310,7 @@ def plot_loss(logs, name):
     losses = get_loss_array(logs)
     losses.plot(x="Epoch", y=['Loss', 'Average F1', 'Favor F1', 'None F1', 'Against F1'])
     losses['name'] = name
-    losses.to_csv('hypertune_results.csv', mode='a')
+    losses.to_csv('sloberta_results.csv', mode='a')
     #plt.savefig(f'figures/{name}_loss.png')
     # save to csv
     #plt.cla()  # which clears data but not axes
